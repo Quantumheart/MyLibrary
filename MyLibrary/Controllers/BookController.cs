@@ -21,7 +21,7 @@ namespace MyLibrary.Controllers
             _bookRepository = bookRepository;
         }
 
-        // GET: api/book
+        // GET: api/books
         // returns the list of records stored in memory
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Book>>> GetRecords()
