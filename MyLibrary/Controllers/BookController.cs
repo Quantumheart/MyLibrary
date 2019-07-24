@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyLibrary.Models;
 using MyLibrary.Repositories;
@@ -10,8 +12,12 @@ using MyLibrary.Repositories;
 
 namespace MyLibrary.Controllers
 {
+
+    // CM 07/22/2019
+    // This controller can only be accessed through a JWTToken Bearer
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class BookController : Controller
     {
         private readonly IBookRepository _bookRepository;
@@ -21,14 +27,17 @@ namespace MyLibrary.Controllers
             _bookRepository = bookRepository;
         }
 
+        // CM 07/23/2019 
+        // Returns a list of books to the application user
         // GET: api/books
-        // returns the list of records stored in memory
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Book>>> GetRecords()
         {
             return new ObjectResult(await _bookRepository.GetBooks());
         }
 
+        // CM 07/23/2019 
+        // Returns a book to the application user
         // GET: api/book/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Book>> GetBook(string id)
@@ -42,11 +51,16 @@ namespace MyLibrary.Controllers
             return new ObjectResult(book); 
         }
 
+        // CM 07/23/2019 
+        // Creates a book in the database
         // POST: api/book
         [HttpPost]
         public async Task<ActionResult<Book>> PostBook([FromBody]Book book)
         {
-            //book.UpdatedAt = DateTime.Now.ToString("yyyy-MM-dd");
+            book.UpdatedAt = DateTime.Now.ToString(format: "yyyy-MM-dd");
+            //                      true            false
+            // is this condition ? ref consequent : ref alternative
+            book.Read = book.Read == null ? "Not read" : "Read";
             await _bookRepository.CreateBook(book);
             return new OkObjectResult(book);
         }
@@ -57,6 +71,8 @@ namespace MyLibrary.Controllers
         //{
         //}
 
+        // CM 07/23/2019 
+        // Deletes a book in the database
         // DELETE: api/book/5
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteAsync(string id)

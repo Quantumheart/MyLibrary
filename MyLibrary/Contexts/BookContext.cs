@@ -15,5 +15,6 @@ namespace MyLibrary.Contexts
             _db = client.GetDatabase(options.Value.Database);
         }
         public IMongoCollection<Book> Books => _db.GetCollection<Book>("Books");
+        public IMongoCollection<ApplicationUser> Users => _db.GetCollection<ApplicationUser>("Users");
     }
 }
